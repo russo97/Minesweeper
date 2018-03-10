@@ -8,7 +8,7 @@
 
 	var graphs = {}, game;
 
-	
+	const resetButton = document.getElementById('resetGame');
 
 
 	function createCanvas (w, h) {
@@ -24,6 +24,8 @@
 		createSprites();
 
 		tabuleiro = preencher_tabuleiro(16, 16);
+
+		resetButton.addEventListener('click', _ => tabuleiro = preencher_tabuleiro(16, 16));
 
 		canvas.addEventListener('click', onClickGame, false);
 		canvas.addEventListener('dblclick', onDoubleClick, false);
@@ -145,7 +147,7 @@
 
 
 	function drawRect (x, y, w, h, color) {
-		ctx.fillStyle = color || 'black';
+		ctx.fillStyle = color;
 		ctx.fillRect(x + 1, y + 1, w - 2, h - 2);
 	};
 
