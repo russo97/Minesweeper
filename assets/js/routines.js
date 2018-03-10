@@ -19,13 +19,15 @@
 
 		content.appendChild(canvas);
 
-		ctx = canvas.getContext('2d');
+		Sprite.prototype.canvasContext = ctx = canvas.getContext('2d');
+
+		createSprites();
+
+		tabuleiro = preencher_tabuleiro(16, 16);
 
 		canvas.addEventListener('click', onClickGame, false);
 		canvas.addEventListener('dblclick', onDoubleClick, false);
 		canvas.addEventListener('contextmenu', onRightClickGame, false);
-
-		tabuleiro = preencher_tabuleiro(16, 16);
 
 		update();
 	};
@@ -53,11 +55,11 @@
 		var matrix = [];
 
 		while (h--) {
-			var reservaX = 0, row = [];
+			var preserve_w = 0, row = [];
 
-			while (reservaX < w) {
-				row.push(new Celula(reservaX, h, tileSize));
-				reservaX++;
+			while (w > preserve_w) {
+				row.push(new Celula(preserve_w, h, tileSize));
+				preserve_w++;
 			};
 
 			matrix.unshift(row);
@@ -73,7 +75,7 @@
 
 		for (var i = 0, lenI = matriz.length; i < lenI; i++) {
 			for (var j = 0, lenJ = matriz[i].length; j < lenJ; j++) {
-				if (matriz[i][j].valor !== -1) {
+				if (matriz[i][j].neighborsCount !== -1) {
 					options.push([i, j]);
 				};
 			};
@@ -92,9 +94,8 @@
 
 			var celula = matriz[choice[0]][choice[1]];
 
-			if (celula.valor >= 0) {
-				celula.valor = -1;
-				celula.is_bomb = true;
+			if (celula.neighborsCount === 0) {
+				celula.neighborsCount = -1;
 				celula.detonated = false;
 			};
 		};
@@ -106,18 +107,19 @@
 	function lancar_indicadores (matriz) {
 		matriz.forEach((row, y) => {
 			row.forEach((celula, x) => {
-				if (celula.valor === -1) return;
-				// seleciona uma celula e conta bombas ao seu redor
+				if (celula.neighborsCount === -1) return;
 				for (var i = -1, indicador = 0; i <= 1; i++) {
 					if (!matriz[y + i]) continue;
 					for (var j = -1; j <= 1; j++) {
 						var celula_vizinha = matriz[y + i][x + j];
-						if (!celula_vizinha || celula_vizinha === celula) continue;
-						if (celula_vizinha.valor === -1) indicador++;
+						if (!celula_vizinha || !i && !j) continue;
+						if (celula_vizinha.neighborsCount === -1) {
+							indicador++;
+						};
 					};
 				};
-				// depois de obter a quantidade de bombas, passo o valor para a celula
-				celula.valor = indicador;
+
+				celula.neighborsCount = indicador;
 			});
 		});
 
@@ -127,11 +129,13 @@
 
 
 	function quantidade_bombas (matriz) {
-		var qnt = 0;
+		var quantidade_atual = 0;
 		
-		matriz.forEach(row => qnt += row.filter(campo => campo.valor === -1).length);
+		matriz.forEach(row => {
+			quantidade_atual += row.filter(campo => campo.neighborsCount === -1).length;
+		});
 
-		return qnt;
+		return quantidade_atual;
 	};
 
 
@@ -149,29 +153,27 @@
 
 	function draw () {
 		clearCanvas('white');
+
 		tabuleiro.forEach((row, y) => {
 			row.forEach((celula, x) => {
 				if (celula.covered) {
 					if (celula.flag) {
-						graphs.bombFlag.toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
+						switch (celula.flag) {
+							case 'bomb':
+								graphs.bombFlag.toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
+								break;
+							case 'suspect':
+								graphs.suspect.toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
+								break;
+						};
 						return;
 					};
 
-					if (celula.suspect) {
-						graphs.suspect.toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
-						return;
-					};
-
-					graphs.covered.toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
-					// if wanna se where the bombs is, remove the comments below
-					// if (celula.valor === -1) {
-					// 	drawRect(x * tileSize + 12, y * tileSize + 12, tileSize - 24, tileSize - 24, 'orange');
-					// }
-					return;
+					return graphs.covered.toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
 				};
 
 
-				switch (celula.valor) {
+				switch (celula.neighborsCount) {
 					case -1:
 						if (celula.detonated) {
 							graphs.detonated.toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
@@ -180,7 +182,7 @@
 						graphs.hasBomb.toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
 						break;
 					case 0:
-						if (celula.flag) {
+						if (celula.flag === 'bomb') {
 							graphs.noBomb.toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
 							break;
 						};
@@ -194,11 +196,11 @@
 					case 6:
 					case 7:
 					case 8:
-						if (celula.flag) {
+						if (celula.flag === 'bomb') {
 							graphs.noBomb.toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
 							break;
 						};
-						graphs.numbers['number' + celula.valor].toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
+						graphs.numbers['number' + celula.neighborsCount].toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
 						break;
 				};
 			});
@@ -212,12 +214,13 @@
 
 
 	function clearIsUncovered () {
-		var allCelulas = tabuleiro.length * tabuleiro[0].length, qnt = 0;
+		var uncoveredCells = tabuleiro.length * tabuleiro[0].length, qnt = 0;
 
-		tabuleiro.forEach(row => qnt += row.filter(celula => celula.valor !== -1 && !celula.covered).length);
+		tabuleiro.forEach(row => {
+			qnt += row.filter(celula => celula.neighborsCount !== -1 && !celula.covered).length;
+		});
 
-		// retorna a quantidade de celulas que não são bombas ja abertas
-		return (allCelulas - qnt_bombas == qnt);
+		return (uncoveredCells - qnt_bombas == qnt);
 	};
 
 
@@ -227,12 +230,12 @@
 
 
 	function selectedElement (posX, posY) {
-		for (var y = 0, lenY = tabuleiro.length; y < tabuleiro.length; y++) {
+		for (var y = 0, lenY = tabuleiro.length; y < lenY; y++) {
 			if (!(posY >= y * tileSize && posY <= y * tileSize + tileSize)) continue;
-			for (var x = 0; x < tabuleiro[y].length; x++) {
-				var celula = tabuleiro[y][x];
-				if (!celula.selectionArea(posX, posY)) continue;
-				return celula;
+			for (var x = 0, lenX = tabuleiro[y].length; x < lenX; x++) {
+				if (posX >= x * tileSize && posX <= x * tileSize + tileSize) {
+					return tabuleiro[y][x];
+				} else continue;
 			};
 		};
 	};
@@ -240,14 +243,12 @@
 
 
 	function virginGame (_el, x, y) {
-		if (_el.valor === -1 && virgin()) {
-
-			while (_el.valor !== 0) {
+		if (_el.neighborsCount === -1 && virgin()) {
+			// the first click cannot be performed in a bomb, we have to repair it
+			while (_el.neighborsCount === -1) {
 				tabuleiro = preencher_tabuleiro(16, 16);
 				_el = selectedElement(x, y);
 			};
-
-			return _el;
 		};
 
 		return _el;
@@ -258,12 +259,12 @@
 	function tagBombsCovered (matriz, el) {
 		matriz.forEach(row => {
 			row.forEach(celula => {
-				if (celula.valor === -1 && celula.flag) return;
-				if (celula.valor === -1 && !celula.flag) {
+				if (celula.neighborsCount === -1 && celula.flag) return;
+				if (celula.neighborsCount === -1 && !celula.flag) {
 					celula.covered = false;
-					celula.detonated = (celula === el);
+					celula.detonated = (celula === el); // celula atual foi a detonada
 				};
-				if (celula.valor >= 0 && celula.flag) {
+				if (celula.neighborsCount >= 0 && celula.flag) {
 					celula.covered = false;
 				};
 			});
@@ -284,19 +285,17 @@
 
 	function onClickGame (event) {
 		event.preventDefault();
-
 		var mouseX = (event.pageX || event.clientX) - content.offsetLeft;
 		var mouseY = (event.pageY || event.clientY) - content.offsetTop;
 
-		var el = virginGame(selectedElement(mouseX, mouseY), mouseX, mouseY);
+		var _el = virginGame(selectedElement(mouseX, mouseY), mouseX, mouseY);
 
-		if (el.covered && !el.flag && !el.suspect && noOneIsDetonated()) {
-			if (el.valor === -1) {
-				tagBombsCovered(tabuleiro, el);
-				return;
+		if (_el.covered && !_el.flag && !_el.suspect && noOneIsDetonated()) {
+			if (_el.neighborsCount === -1) {
+				return tagBombsCovered(tabuleiro, _el);
 			};
 
-			el.revealIt(tabuleiro);
+			_el.revealIt(tabuleiro);
 
 			checkVictory();
 		};
@@ -306,7 +305,6 @@
 
 	function onDoubleClick (event) {
 		event.preventDefault();
-
 		var mouseX = (event.clientX || event.pageX) - content.offsetLeft;
 		var mouseY = (event.clientY || event.pageY) - content.offsetTop;
 
@@ -317,12 +315,12 @@
 				if (!tabuleiro[_el.y + y]) continue;
 				for (var x = -1; x <= 1; x++) {
 					var celula_vizinha = tabuleiro[_el.y + y][_el.x + x];
-					if (!celula_vizinha) continue;
-					if (celula_vizinha.flag) howMany++;
+					if (!celula_vizinha || !y && !x) continue;
+					if (celula_vizinha.flag === 'bomb') howMany++;
 				};
 			};
 
-			if (howMany === _el.valor) clearAround(_el);
+			if (howMany === _el.neighborsCount) clearAround(_el, tabuleiro);
 
 			checkVictory();
 		};
@@ -330,19 +328,17 @@
 
 
 
-	function clearAround (el) {
+	function clearAround (el, matriz) {
 		for (var i = -1; i <= 1; i++) {
-			if (!tabuleiro[el.y + i]) continue;
+			if (!matriz[el.y + i]) continue;
 			for (var j = -1; j <= 1; j++) {
-				var celula = tabuleiro[el.y + i][el.x + j];
-
-				if (!celula || celula.flag) continue;
-				if (celula.valor === -1) {
-					tagBombsCovered(tabuleiro, celula);
-					return;
+				var vizinha = matriz[el.y + i][el.x + j];
+				if (!vizinha || vizinha.flag === 'bomb') continue;
+				if (vizinha.neighborsCount === -1) {
+					return tagBombsCovered(matriz, vizinha);
 				};
 
-				celula.revealIt(tabuleiro);
+				vizinha.revealIt(matriz);
 			};
 		};
 	};
@@ -351,32 +347,14 @@
 
 	function onRightClickGame (event) {
 		event.preventDefault();
-
 		var mouseX = (event.clientX || event.pageX) - content.offsetLeft;
 		var mouseY = (event.clientY || event.pageY) - content.offsetTop;
 
 		var _el = selectedElement(mouseX, mouseY);
 
 		if (_el.covered && noOneIsDetonated()) {
-			if (!_el.flag && !_el.suspect) {
-				_el.flag = true;
-				return;
-			};
-
-			if (_el.flag && !_el.suspect) {
-				_el.flag = false;
-				_el.suspect = true;
-				return;
-			};
-
-			if (!_el.flag && _el.suspect) {
-				_el.flag = _el.suspect = false;
-				return;
-			};
-
-			checkVictory();
+			_el.flag = !_el.flag ? 'bomb' : (_el.flag === 'bomb') ? 'suspect' : null;
 		};
-
 	};
 
 
@@ -391,7 +369,7 @@
 	var image = new Image();
 	image.src = url_image;
 	image.onload = function () {
-		createSprites();
+		// createSprites();
 		createCanvas(480, 480);
 	};
 } ());

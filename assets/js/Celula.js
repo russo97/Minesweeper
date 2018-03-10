@@ -1,34 +1,41 @@
+
+
 	function Celula (x, y, w) {
 		this.x = x;
 		this.y = y;
 		this.w = w;
 
-		this.valor     = 0;
-		this.flag      = false;
+		this.flag      = null;
 		this.covered   = true;
-		this.suspect   = false;
+
+		this.neighborsList = [];
+		this.neighborsCount = 0;
 
 		this.selectionArea = function (x, y) {
-			return (y >= this.y * this.w && y <= this.y * this.w + this.w &&
-					x >= this.x * this.w && x <= this.x * this.w + this.w);
+			var _el = this;
+
+			return (y >= _el.y * _el.w && y <= _el.y * _el.w + _el.w &&
+					x >= _el.x * _el.w && x <= _el.x * _el.w + _el.w);
 		};
 
 		this.revealIt = function (matriz) {
 			this.covered = false;
 
-			if (this.valor == 0) {
+			if (this.neighborsCount === 0) {
 				this.floodFill(matriz);
 			};
 		};
 
 		this.floodFill = function (matriz) {
 			var _el = this;
+
 			for (var i = -1; i <= 1; i++) {
 				if (!matriz[_el.y + i]) continue;
 				for (var j = -1; j <= 1; j++) {
-					if (!matriz[_el.y + i][_el.x + j]) continue;
-					if (matriz[_el.y + i][_el.x + j].valor >= 0 && matriz[_el.y + i][_el.x + j].covered) {
-						matriz[_el.y + i][_el.x + j].revealIt(matriz);
+					var celula = matriz[_el.y + i][_el.x + j];
+					if (!celula || !i && !j) continue;
+					if (celula.neighborsCount >= 0 && celula.covered) {
+						celula.revealIt(matriz);
 					};
 				};
 			};
