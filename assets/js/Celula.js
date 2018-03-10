@@ -1,24 +1,28 @@
 
 
-	function Celula (x, y, w) {
-		this.x = x;
-		this.y = y;
-		this.w = w;
 
-		this.flag      = null;
-		this.covered   = true;
+	class Celula {
+		constructor (x, y, w) {
+			this.x = x;
+			this.y = y;
+			this.w = w;
 
-		this.neighborsList = [];
-		this.neighborsCount = 0;
+			this.flag    = null;
+			this.covered = true;
 
-		this.selectionArea = function (x, y) {
-			var _el = this;
-
-			return (y >= _el.y * _el.w && y <= _el.y * _el.w + _el.w &&
-					x >= _el.x * _el.w && x <= _el.x * _el.w + _el.w);
+			this.neighborsList  = [];
+			this.neighborsCount = 0;
 		};
 
-		this.revealIt = function (matriz) {
+		selectionArea (x, y) {
+			var _el = this;
+
+			return (
+				y >= _el.y * _el.w && y <= _el.y * _el.w + _el.w && x >= _el.x * _el.w && x <= _el.x * _el.w + _el.w
+			);
+		};
+
+		revealIt (matriz) {
 			this.covered = false;
 
 			if (this.neighborsCount === 0) {
@@ -26,7 +30,7 @@
 			};
 		};
 
-		this.floodFill = function (matriz) {
+		floodFill (matriz) {
 			var _el = this;
 
 			for (var i = -1; i <= 1; i++) {
@@ -41,44 +45,5 @@
 			};
 		};
 	};
-
-
-
-
-
-
-
-
-
-
-
-
-
-	function Game () {
-		this.state = 'not_playing';
-
-		this.startGame = function () {
-			this.state = 'running';
-		};
-
-		this.loseGame = function () {
-			this.state = 'you_lose';
-		};
-
-		this.restartGame = function () {
-			this.startGame();
-		};
-	};
-
-
-
-
-
-
-
-
-
-
-
 
 

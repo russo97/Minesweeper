@@ -6,7 +6,7 @@
 
 	var url_image = 'assets/img/minesweeper_graphs.png', content = document.getElementById('mineSweeper');
 
-	var graphs = {}, game = new Game();
+	var graphs = {}, game;
 
 	
 
@@ -58,8 +58,7 @@
 			var preserve_w = 0, row = [];
 
 			while (w > preserve_w) {
-				row.push(new Celula(preserve_w, h, tileSize));
-				preserve_w++;
+				row.push(new Celula(preserve_w++, h, tileSize));
 			};
 
 			matrix.unshift(row);
@@ -131,15 +130,15 @@
 	function quantidade_bombas (matriz) {
 		var quantidade_atual = 0;
 		
-		matriz.forEach(row => {
-			quantidade_atual += row.filter(campo => campo.neighborsCount === -1).length;
-		});
+		for (let i = 0, len = matriz.length; i < len; i++) {
+			quantidade_atual += matriz[i].filter(cell => cell.neighborsCount < 0).length;
+		};
 
 		return quantidade_atual;
 	};
 
 
-	function clearCanvas (newColor) {
+	function clearCanvas (newColor = '#fff') {
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		drawRect(0, 0, canvas.width, canvas.height, newColor);
 	};
@@ -152,12 +151,13 @@
 
 
 	function draw () {
-		clearCanvas('white');
+		clearCanvas();
 
 		tabuleiro.forEach((row, y) => {
 			row.forEach((celula, x) => {
 				if (celula.covered) {
 					if (celula.flag) {
+
 						switch (celula.flag) {
 							case 'bomb':
 								graphs.bombFlag.toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
@@ -166,6 +166,7 @@
 								graphs.suspect.toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
 								break;
 						};
+
 						return;
 					};
 
@@ -179,6 +180,7 @@
 							graphs.detonated.toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
 							break;
 						};
+
 						graphs.hasBomb.toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
 						break;
 					case 0:
@@ -186,6 +188,7 @@
 							graphs.noBomb.toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
 							break;
 						};
+
 						graphs.emptyCell.toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
 						break;
 					case 1:
@@ -235,7 +238,7 @@
 			for (var x = 0, lenX = tabuleiro[y].length; x < lenX; x++) {
 				if (posX >= x * tileSize && posX <= x * tileSize + tileSize) {
 					return tabuleiro[y][x];
-				} else continue;
+				};
 			};
 		};
 	};
@@ -277,7 +280,7 @@
 		if (clearIsUncovered()) {
 			setTimeout(function () {
 				alert('venceu');
-			}, 1000);
+			}, 100);
 		};
 	};
 
