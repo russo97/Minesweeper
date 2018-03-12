@@ -25,7 +25,9 @@
 
 		tabuleiro = preencher_tabuleiro(16, 16);
 
-		resetButton.addEventListener('click', _ => tabuleiro = preencher_tabuleiro(16, 16));
+		resetButton.addEventListener('click', _ => {
+			tabuleiro = preencher_tabuleiro(16, 16);
+		});
 
 		canvas.addEventListener('click', onClickGame, false);
 		canvas.addEventListener('dblclick', onDoubleClick, false);
@@ -155,60 +157,8 @@
 	function draw () {
 		clearCanvas();
 
-		tabuleiro.forEach((row, y) => {
-			row.forEach((celula, x) => {
-				if (celula.covered) {
-					if (celula.flag) {
-
-						switch (celula.flag) {
-							case 'bomb':
-								graphs.bombFlag.toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
-								break;
-							case 'suspect':
-								graphs.suspect.toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
-								break;
-						};
-
-						return;
-					};
-
-					return graphs.covered.toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
-				};
-
-
-				switch (celula.neighborsCount) {
-					case -1:
-						if (celula.detonated) {
-							graphs.detonated.toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
-							break;
-						};
-
-						graphs.hasBomb.toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
-						break;
-					case 0:
-						if (celula.flag === 'bomb') {
-							graphs.noBomb.toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
-							break;
-						};
-
-						graphs.emptyCell.toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
-						break;
-					case 1:
-					case 2:
-					case 3:
-					case 4:
-					case 5:
-					case 6:
-					case 7:
-					case 8:
-						if (celula.flag === 'bomb') {
-							graphs.noBomb.toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
-							break;
-						};
-						graphs.numbers['number' + celula.neighborsCount].toDraw(x * tileSize, y * tileSize, tileSize, tileSize);
-						break;
-				};
-			});
+		tabuleiro.forEach(row => {
+			row.forEach(cell => cell.draw(graphs, tileSize));
 		});
 	};
 
@@ -295,7 +245,7 @@
 
 		var _el = virginGame(selectedElement(mouseX, mouseY), mouseX, mouseY);
 
-		if (_el.covered && !_el.flag && !_el.suspect && noOneIsDetonated()) {
+		if (_el.covered && !_el.flag && !_el.suspect && noOneIsDetonated() && !clearIsUncovered()) {
 			if (_el.neighborsCount === -1) {
 				return tagBombsCovered(tabuleiro, _el);
 			};
@@ -315,13 +265,13 @@
 
 		var _el = selectedElement(mouseX, mouseY);
 
-		if (!_el.covered && !_el.flag && !_el.suspect && noOneIsDetonated()) {
+		if (!_el.covered && !_el.flag && !_el.suspect && noOneIsDetonated() && !clearIsUncovered()) {
 			for (var y = -1, howMany = 0; y <= 1; y++) {
 				if (!tabuleiro[_el.y + y]) continue;
 				for (var x = -1; x <= 1; x++) {
 					var celula_vizinha = tabuleiro[_el.y + y][_el.x + x];
 					if (!celula_vizinha || !y && !x) continue;
-					if (celula_vizinha.flag === 'bomb') howMany++;
+					if (celula_vizinha.flag === 'bombFlag') howMany++;
 				};
 			};
 
@@ -338,7 +288,7 @@
 			if (!matriz[el.y + i]) continue;
 			for (var j = -1; j <= 1; j++) {
 				var vizinha = matriz[el.y + i][el.x + j];
-				if (!vizinha || vizinha.flag === 'bomb') continue;
+				if (!vizinha || vizinha.flag === 'bombFlag') continue;
 				if (vizinha.neighborsCount === -1) {
 					return tagBombsCovered(matriz, vizinha);
 				};
@@ -357,8 +307,8 @@
 
 		var _el = selectedElement(mouseX, mouseY);
 
-		if (_el.covered && noOneIsDetonated()) {
-			_el.flag = !_el.flag ? 'bomb' : (_el.flag === 'bomb') ? 'suspect' : null;
+		if (_el.covered && noOneIsDetonated() && !clearIsUncovered()) {
+			_el.flag = !_el.flag ? 'bombFlag' : (_el.flag === 'bombFlag') ? 'suspect' : null;
 		};
 	};
 

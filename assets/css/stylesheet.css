@@ -3,6 +3,11 @@
 	padding: 0;
 	outline: 0 none;
 	text-decoration: none;
+	-webkit-user-select: none;
+	   -moz-user-select: none;
+		-ms-user-select: none;
+		 -o-user-select: none;
+			user-select: none;
 }
 
 html, body {
