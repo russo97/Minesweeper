@@ -33,84 +33,6 @@ body {
 	box-shadow: 0 0 2px gray, 0 2px 2px gray;
 }
 
-#content {
-	width: 480px;
-	height: 480px;
-	position: absolute;
-	top: 0px;
-	left: 0px;
-	z-index: 12;
-	/*background-color: rgba(0, 0, 0, 0.2);*/
-}
-
-#menu {
-	width: 80%;
-	height: 50%;
-	position: absolute;
-	top: 0px;
-	left: 0px;
-	right: 0px;
-	bottom: 0px;
-	margin: auto;
-	-webkit-border-radius: 2px;
-			border-radius: 2px;
-	background-color: #C1CDCD;
-	border: 2px solid white;
-	box-shadow: 0px 0px 4px rgba(0, 0, 0, .5), 0px 4px 4px rgba(0, 0, 0, .5);
-}
-
-#menu h1 {
-	width: 80%;
-	margin: 0 auto;
-	color: #8B1A1A;
-	padding: 5px 0px;
-	text-align: center;
-	background: url('../img/1x1px.png') repeat-x 0 50%;
-	font-family: 'Consolas', sans-serif;
-}
-
-#menu h1 span {
-	padding: 0 10px;
-	background-color: #C1CDCD;
-}
-
-#menu button {
-	width: 50%;
-	height: 40px;
-	top: 70%;
-	left: 25%;
-	color: white;
-	border: none;
-	cursor: pointer;
-	position: absolute;
-	background-color: #838B8B;
-	-webkit-border-radius: 4px;
-	   -moz-border-radius: 4px;
-		-ms-border-radius: 4px;
-		 -o-border-radius: 4px;
-			border-radius: 4px;
-	box-shadow: 0 0 4px #aaa, 0 4px 4px #aaa;
-	font-size: 15pt;
-	/*font-family: 'Consolas', sans-serif;*/
-	transition: all .5s ease;
-}
-
-#menu button:hover {
-	background-color: firebrick;
-	box-shadow: 0 0 10px #aaa, 0 4px 6px #aaa;
-}
-
-#menu img {
-	width: 80px;
-	height: 80px;
-	position: absolute;
-	top: -30px;
-	left: 0px;
-	right: 0px;
-	bottom: 0px;
-	margin: auto;
-}
-
 canvas {
 	position: absolute;
 	top: 0px;
@@ -124,7 +46,7 @@ canvas {
 	height: 35px;
 	position: absolute;
 	left: -30px;
-	top: 100px;
+	top: 90px;
 	color: gray;
 	border: none;
 	cursor: pointer;
