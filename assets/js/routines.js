@@ -34,7 +34,7 @@
 		canvas.addEventListener('contextmenu', onRightClickGame, false);
 
 		update();
-	};
+	}
 
 
 
@@ -52,7 +52,7 @@
 		for (var n = 1, total = 8, starting = 168; n <= total; n++, starting += 24) {
 			graphs.numbers['number' + n] = new Sprite(image, starting, 0, 24, 24);
 		};
-	};
+	}
 
 
 	function preencher_tabuleiro (w, h) {
@@ -63,13 +63,13 @@
 
 			while (w > preserve_w) {
 				row.push(new Celula(preserve_w++, h, tileSize));
-			};
+			}
 
 			matrix.unshift(row);
-		};
+		}
 
 		return lancar_bombas(matrix);
-	};
+	}
 
 
 	
@@ -80,12 +80,12 @@
 			for (var j = 0, lenJ = matriz[i].length; j < lenJ; j++) {
 				if (matriz[i][j].neighborsCount !== -1) {
 					options.push([i, j]);
-				};
-			};
-		};
+				}
+			}
+		}
 
 		return options;
-	};
+	}
 
 
 
@@ -100,11 +100,11 @@
 			if (celula.neighborsCount === 0) {
 				celula.neighborsCount = -1;
 				celula.detonated = false;
-			};
-		};
+			}
+		}
 
 		return lancar_indicadores(matriz);
-	};
+	}
 
 
 	function lancar_indicadores (matriz) {
@@ -118,42 +118,34 @@
 						if (!celula_vizinha || !i && !j) continue;
 						if (celula_vizinha.neighborsCount === -1) {
 							indicador++;
-						};
-					};
-				};
+						}
+					}
+				}
 
 				celula.neighborsCount = indicador;
 			});
 		});
 
 		return matriz;
-	};
+	}
 
 
 
-	function quantidade_bombas (matriz) {
-// 		var quantidade_atual = 0;
-		
-// 		for (let i = 0, len = matriz.length; i < len; i++) {
-// 			quantidade_atual += matriz[i].filter(cell => cell.neighborsCount < 0).length;
-// 		};
-
-// 		return quantidade_atual;
-		
-		return matrix.reduce((acc, cur) => acc + cur.filter(cell => cell.neighborsCount < 0).length, 0);
-	};
+	function quantidade_bombas (matriz) {		
+		return matriz.reduce((acc, cur) => acc + cur.filter(cell => cell.neighborsCount < 0).length, 0);
+	}
 
 
 	function clearCanvas (newColor = '#fff') {
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		drawRect(0, 0, canvas.width, canvas.height, newColor);
-	};
+	}
 
 
 	function drawRect (x, y, w, h, color) {
 		ctx.fillStyle = color;
 		ctx.fillRect(x + 1, y + 1, w - 2, h - 2);
-	};
+	}
 
 
 	function draw () {
@@ -162,13 +154,12 @@
 		tabuleiro.forEach(row => {
 			row.forEach(cell => cell.draw(graphs, tileSize));
 		});
-	};
+	}
 
 
 	function virgin () {
 		return !tabuleiro.some(row => row.some(celula => !celula.covered));
-	};
-
+	}
 
 	function clearIsUncovered () {
 		var uncoveredCells = tabuleiro.length * tabuleiro[0].length, qnt = 0;
@@ -178,12 +169,12 @@
 		});
 
 		return (uncoveredCells - qnt_bombas == qnt);
-	};
+	}
 
 
 	function noOneIsDetonated () {
 		return !tabuleiro.some(row => row.some(celula => celula.detonated));
-	};
+	}
 
 
 	function selectedElement (posX, posY) {
@@ -192,10 +183,10 @@
 			for (var x = 0, lenX = tabuleiro[y].length; x < lenX; x++) {
 				if (posX >= x * tileSize && posX <= x * tileSize + tileSize) {
 					return tabuleiro[y][x];
-				};
-			};
-		};
-	};
+				}
+			}
+		}
+	}
 
 
 
@@ -205,11 +196,11 @@
 			while (_el.neighborsCount === -1) {
 				tabuleiro = preencher_tabuleiro(16, 16);
 				_el = selectedElement(x, y);
-			};
-		};
+			}
+		}
 
 		return _el;
-	};
+	}
 
 
 
@@ -220,13 +211,13 @@
 				if (celula.neighborsCount === -1 && !celula.flag) {
 					celula.covered = false;
 					celula.detonated = (celula === el); // celula atual foi a detonada
-				};
+				}
 				if (celula.neighborsCount >= 0 && celula.flag) {
 					celula.covered = false;
-				};
+				}
 			});
 		});
-	};
+	}
 
 
 
@@ -235,8 +226,8 @@
 			setTimeout(function () {
 				alert('venceu');
 			}, 100);
-		};
-	};
+		}
+	}
 
 
 
@@ -250,13 +241,13 @@
 		if (_el.covered && !_el.flag && !_el.suspect && noOneIsDetonated() && !clearIsUncovered()) {
 			if (_el.neighborsCount === -1) {
 				return tagBombsCovered(tabuleiro, _el);
-			};
+			}
 
 			_el.revealIt(tabuleiro);
 
 			checkVictory();
-		};
-	};
+		}
+	}
 
 
 
@@ -274,14 +265,14 @@
 					var celula_vizinha = tabuleiro[_el.y + y][_el.x + x];
 					if (!celula_vizinha || !y && !x) continue;
 					if (celula_vizinha.flag === 'bombFlag') howMany++;
-				};
-			};
+				}
+			}
 
 			if (howMany === _el.neighborsCount) clearAround(_el, tabuleiro);
 
 			checkVictory();
-		};
-	};
+		}
+	}
 
 
 
@@ -293,12 +284,12 @@
 				if (!vizinha || vizinha.flag === 'bombFlag') continue;
 				if (vizinha.neighborsCount === -1) {
 					return tagBombsCovered(matriz, vizinha);
-				};
+				}
 
 				vizinha.revealIt(matriz);
-			};
-		};
-	};
+			}
+		}
+	}
 
 
 
@@ -311,15 +302,15 @@
 
 		if (_el.covered && noOneIsDetonated() && !clearIsUncovered()) {
 			_el.flag = !_el.flag ? 'bombFlag' : (_el.flag === 'bombFlag') ? 'suspect' : null;
-		};
-	};
+		}
+	}
 
 
 	function update (time = 0) {
 		draw();
 
 		requestAnimationFrame(update, canvas);
-	};
+	}
 
 
 
@@ -328,5 +319,5 @@
 	image.onload = function () {
 		// createSprites();
 		createCanvas(480, 480);
-	};
+	}
 } ());
