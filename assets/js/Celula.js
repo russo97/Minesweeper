@@ -12,7 +12,7 @@
 
 			this.neighborsList  = [];
 			this.neighborsCount = 0;
-		};
+		}
 
 		selectionArea (x, y) {
 			var _el = this;
@@ -20,33 +20,34 @@
 			return (
 				y >= _el.y * _el.w && y <= _el.y * _el.w + _el.w && x >= _el.x * _el.w && x <= _el.x * _el.w + _el.w
 			);
-		};
+		}
 
 		draw (Sprites, tileSize) {
-			let _el = this;
+			let _el         = this,
+			    coordinates = [_el.x * tileSize, _el.y * tileSize, tileSize, tileSize];
 
 			if (_el.covered) {
 				if (_el.flag) {
-					return Sprites[_el.flag].toDraw(_el.x * tileSize, _el.y * tileSize, tileSize, tileSize);
-				};
+					return Sprites[_el.flag].toDraw(...coordinates);
+				}
 
-				return Sprites.covered.toDraw(_el.x * tileSize, _el.y * tileSize, tileSize, tileSize);
-			};
+				return Sprites.covered.toDraw(...coordinates);
+			}
 
 			switch (_el.neighborsCount) {
 				case -1:
 					if (_el.detonated) {
-						return Sprites.detonated.toDraw(_el.x * tileSize, _el.y * tileSize, tileSize, tileSize);
-					};
+						return Sprites.detonated.toDraw(...coordinates);
+					}
 
-					Sprites.hasBomb.toDraw(_el.x * tileSize, _el.y * tileSize, tileSize, tileSize);
+					Sprites.hasBomb.toDraw(...coordinates);
 					break;
 				case 0:
 					if (_el.flag === 'bombFlag') {
-						return Sprites.noBomb.toDraw(_el.x * tileSize, _el.y * tileSize, tileSize, tileSize);
-					};
+						return Sprites.noBomb.toDraw(...coordinates);
+					}
 
-					Sprites.emptyCell.toDraw(_el.x * tileSize, _el.y * tileSize, tileSize, tileSize);
+					Sprites.emptyCell.toDraw(...coordinates);
 					break;
 				case 1:
 				case 2:
@@ -57,21 +58,21 @@
 				case 7:
 				case 8:
 					if (_el.flag === 'bombFlag') {
-						return Sprites.noBomb.toDraw(_el.x * tileSize, _el.y * tileSize, tileSize, tileSize);
-					};
+						return Sprites.noBomb.toDraw(...coordinates);
+					}
 
-					Sprites.numbers['number' + _el.neighborsCount].toDraw(_el.x * tileSize, _el.y * tileSize, tileSize, tileSize);
+					Sprites.numbers['number' + _el.neighborsCount].toDraw(...coordinates);
 					break;
-			};
-		};
+			}
+		}
 
 		revealIt (matriz) {
 			this.covered = false;
 
 			if (this.neighborsCount === 0) {
 				this.floodFill(matriz);
-			};
-		};
+			}
+		}
 
 		floodFill (matriz) {
 			var _el = this;
@@ -83,10 +84,10 @@
 					if (!celula || !i && !j) continue;
 					if (celula.neighborsCount >= 0 && celula.covered) {
 						celula.revealIt(matriz);
-					};
-				};
-			};
-		};
-	};
+					}
+				}
+			}
+		}
+	}
 
 
