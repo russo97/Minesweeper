@@ -16,20 +16,19 @@ html, body {
 }
 
 body {
+	display: flex;
+	position: relative;
+	flex-flow: row wrap;
+	align-items: center;
+	justify-content: center;
 	background-color: gainsboro;
 	background-image: linear-gradient(135deg, #363636, #1e1e1e);
-	position: relative;
 }
 
 #mineSweeper {
 	width: 480px;
 	height: 480px;
-	position: absolute;
-	top: 0px;
-	left: 0px;
-	right: 0px;
-	bottom: 0px;
-	margin: auto;
+	position: relative;
 	box-shadow: 0 0 2px gray, 0 2px 2px gray;
 }
 
