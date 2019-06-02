@@ -132,13 +132,15 @@
 
 
 	function quantidade_bombas (matriz) {
-		var quantidade_atual = 0;
+// 		var quantidade_atual = 0;
 		
-		for (let i = 0, len = matriz.length; i < len; i++) {
-			quantidade_atual += matriz[i].filter(cell => cell.neighborsCount < 0).length;
-		};
+// 		for (let i = 0, len = matriz.length; i < len; i++) {
+// 			quantidade_atual += matriz[i].filter(cell => cell.neighborsCount < 0).length;
+// 		};
 
-		return quantidade_atual;
+// 		return quantidade_atual;
+		
+		return matrix.reduce((acc, cur) => acc + cur.filter(cell => cell.neighborsCount < 0).length, 0);
 	};
 
 
