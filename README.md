@@ -1,2 +1,3 @@
-# minesweeper.github.io
-Minesweeper game in Javascript
+# Minesweeper
+
+#### Um simples campo minado com HTML, CSS e Javascript
