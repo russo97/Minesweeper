@@ -27,11 +27,9 @@
 			    coordinates = [_el.x * tileSize, _el.y * tileSize, tileSize, tileSize];
 
 			if (_el.covered) {
-				if (_el.flag) {
-					return Sprites[_el.flag].toDraw(...coordinates);
-				}
+				let flag = _el.flag	? Sprites[_el.flag]	: Sprites.covered;
 
-				return Sprites.covered.toDraw(...coordinates);
+				return flag.toDraw(...coordinates);
 			}
 
 			switch (_el.neighborsCount) {

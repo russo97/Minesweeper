@@ -1,12 +1,10 @@
 (function () {
 
-
-
-	var canvas, ctx, tileSize = 30, dropCounter = 0, dropInterval = 10, lastUpdate = 0, qnt_bombas = 40, tabuleiro;
+	var canvas, ctx, tileSize = 30, qnt_bombas = 40, tabuleiro;
 
 	var url_image = 'assets/img/minesweeper_graphs.png', content = document.getElementById('mineSweeper');
 
-	var graphs = {}, game;
+	var graphs = {};
 
 	const resetButton = document.getElementById('resetGame');
 
