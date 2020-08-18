@@ -193,12 +193,10 @@
 
 
 	function virginGame (_el, x, y) {
-		if (_el.neighborsCount === -1 && virgin()) {
-			// the first click cannot be performed in a bomb, we have to repair it
-			while (_el.neighborsCount === -1) {
-				tabuleiro = preencher_tabuleiro(16, 16);
-				_el = selectedElement(x, y);
-			}
+		while (_el.neighborsCount === -1 && virgin()) {
+			tabuleiro = preencher_tabuleiro(16, 16);
+
+			_el = selectedElement(x, y);
 		}
 
 		return _el;
