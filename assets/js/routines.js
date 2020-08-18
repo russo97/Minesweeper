@@ -36,6 +36,16 @@
 
 
 
+	function random (min = 0, max) {
+		const args_len = arguments.length;
+
+		return args_len < 2
+			? Math.floor(Math.random() * min)
+			: Math.floor(Math.random() * (max - min + 1) + min);
+	}
+
+
+
 	function createSprites () {
 		graphs.covered   = new Sprite(image, 0, 0, 24, 24);
 		graphs.emptyCell = new Sprite(image, 24, 0, 24, 24);
@@ -85,7 +95,7 @@
 		var options = freeOptions(matriz);
 
 		while (qnt_bombas > quantidade_bombas(matriz)) {
-			var index = Math.floor(Math.random() * options.length), choice = options.splice(index, 1)[0];
+			var index = random(options.length), choice = options.splice(index, 1)[0];
 
 			var celula = matriz[choice[0]][choice[1]];
 
