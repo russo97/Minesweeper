@@ -54,17 +54,11 @@
 
 
 	function preencher_tabuleiro (w, h) {
-		var matrix = [];
-
-		while (h--) {
-			var preserve_w = 0, row = [];
-
-			while (w > preserve_w) {
-				row.push(new Celula(preserve_w++, h, tileSize));
-			}
-
-			matrix.unshift(row);
-		}
+		const matrix = Array.from({ length: h }, (col, y) => {
+			return Array.from({ length: w }, (row, x) => {
+				return new Celula(x, y, tileSize);
+			});
+		});
 
 		return lancar_bombas(matrix);
 	}
