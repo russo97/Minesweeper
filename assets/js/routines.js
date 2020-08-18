@@ -266,9 +266,12 @@
 				}
 			}
 
-			if (howMany === _el.neighborsCount) clearAround(_el, tabuleiro);
+			if (howMany === _el.neighborsCount) {
+				clearAround(_el, tabuleiro);
+				
+				checkVictory();
+			}
 
-			checkVictory();
 		}
 	}
 
