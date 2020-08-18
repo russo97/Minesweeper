@@ -164,13 +164,11 @@
 	}
 
 	function clearIsUncovered () {
-		var uncoveredCells = tabuleiro.length * tabuleiro[0].length, qnt = 0;
+		const coveredCells = tabuleiro.length * tabuleiro[0].length;
 
-		tabuleiro.forEach(row => {
-			qnt += row.filter(celula => celula.neighborsCount !== -1 && !celula.covered).length;
-		});
+		const currentDiscovered = tabuleiro.reduce((acc, cur) => acc + cur.filter(celula => celula.neighborsCount !== -1 && !celula.covered).length, 0);
 
-		return (uncoveredCells - qnt_bombas == qnt);
+		return coveredCells - qnt_bombas === currentDiscovered;
 	}
 
 
